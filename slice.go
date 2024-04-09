@@ -15,19 +15,20 @@ import (
 type Slice[T any] []T
 
 // METHODS
+
 // The At() method returns an indexed element from an slice.
 func (s *Slice[T]) At(index int) T {
 	return (*s)[index]
 }
 
-// The Concat() method does not change the existing slice. It returns a new slice.
+// The Concat() method does not change the existing slice. It returns a new slice. See also Merge().
 func (s *Slice[T]) Concat(elements ...Slice[T]) *Slice[T] {
-	newArray := make(Slice[T], 0)
-	newArray = append(newArray, *s...)
+	newSlice := make(Slice[T], 0)
+	newSlice = append(newSlice, *s...)
 	for _, element := range elements {
-		newArray = append(newArray, element...)
+		newSlice = append(newSlice, element...)
 	}
-	return &newArray
+	return &newSlice
 }
 
 // The join() method joins all slice elements into a string.
@@ -47,7 +48,7 @@ func (s *Slice[T]) Length() int {
 	return len(*s)
 }
 
-// The Merge() method modifies the existing slice instead of returning a new one.
+// The Merge() method modifies the existing slice instead of returning a new one. See also Concat().
 func (s *Slice[T]) Merge(items ...Slice[T]) *Slice[T] {
 	for _, item := range items {
 		*s = append(*s, item...)
@@ -55,7 +56,7 @@ func (s *Slice[T]) Merge(items ...Slice[T]) *Slice[T] {
 	return s
 }
 
-// The Pop() method removes the last element from an slice.
+// The Pop() method removes and returns the last element from an slice.
 func (s *Slice[T]) Pop() T {
 	var e T
 	l := len(*s)
@@ -72,7 +73,7 @@ func (s *Slice[T]) Push(item T) *Slice[T] {
 	return s
 }
 
-// The Shift() method removes the first slice element and "shifts" all other elements to a lower index.
+// The Shift() method removes and returns the first element and "shifts" all other elements to a lower index.
 func (s *Slice[T]) Shift() T {
 	var e T
 	l := len(*s)
@@ -86,18 +87,18 @@ func (s *Slice[T]) Shift() T {
 /*
 The Slice() method can be used to remove an item from a slice and return the modified slice.
 
-The first argument (index) is the index of the element to remove.
+The argument (index) is the index of the element to remove.
 */
 func (s *Slice[T]) Slice(index int) *Slice[T] {
 	return s.Splice(index, 1)
 }
 
 /*
-The Splice() method can be used to add new or remove elements to an slice
+The Splice() method can be used to add new or remove elements to/from an slice. It returns a modified slice.
 
 The first argument (start) is the index at which to start adding/removing items.
 
-The second argument (deleteCount) is the number of elements to remove from original the slice.
+The second argument (deleteCount) is the number of elements to remove from the original the slice.
 
 The remaining argument (elements) are the new elements to add to the slice.
 */
@@ -122,7 +123,7 @@ func (s *Slice[T]) Splice(start, deleteCount int, elements ...T) *Slice[T] {
 }
 
 /*
-The ToSliced() method returns a new slice from an existing slice where the element with the given index is removed.
+The ToSliced() method returns a new slice from an existing slice where the element with the given index is removed. See also Slice().
 */
 func (s *Slice[T]) ToSliced(index int) *Slice[T] {
 	result := Slice[T]{}
@@ -131,7 +132,7 @@ func (s *Slice[T]) ToSliced(index int) *Slice[T] {
 }
 
 /*
-The ToSpliced() method can be used to add new items to an slice without changing the original slice.
+The ToSpliced() method can be used to add new items to an slice without changing the original slice. See also Splice().
 
 The first argument (start) is the index at which to start adding/removing items.
 
@@ -179,7 +180,7 @@ func (s *Slice[T]) UnShift(item T) *Slice[T] {
 // SORT
 
 /*
-The Sort() method sorts the elements of a slice in-place.
+The Sort() method sorts the elements of a slice in-place. See also ToSorted() and Reversed().
 
 The less function parameter specifies a less-than comparison between two elements that returns true if the first argument is less than the second
 */
@@ -191,7 +192,7 @@ func (s *Slice[T]) Sort(less func(T, T) bool) *Slice[T] {
 }
 
 /*
-The ToSorted() method sorts the elements of a slice and returns a new slice instead of modifying the original one.
+The ToSorted() method sorts the elements of a slice and returns a new slice instead of modifying the original one. See also Sort() and Reverse().
 
 The less function parameter specifies a less-than comparison between two elements that returns true if the first argument is less than the second
 */
@@ -205,7 +206,7 @@ func (s *Slice[T]) ToSorted(less func(T, T) bool) *Slice[T] {
 }
 
 /*
-The Reverse() method reverse sorts the elements of a slice in-place.
+The Reverse() method reverse sorts the elements of a slice in-place. You can use the same 'less' function as with the Sort method. See also Sort() and ToReversed()
 
 The less function parameter specifies a less-than comparison between two elements that returns true if the first argument is less than the second
 */
@@ -217,7 +218,7 @@ func (s *Slice[T]) Reverse(less func(T, T) bool) *Slice[T] {
 }
 
 /*
-The ToReversed() method reverse sorts the elements of a slice and returns a new slice instead of modifying the original one.
+The ToReversed() method reverse sorts the elements of a slice and returns a new slice instead of modifying the original one. See also Reverse() and Sort()
 
 The less function parameter specifies a less-than comparison between two elements that returns true if the first argument is less than the second
 */
@@ -233,7 +234,15 @@ func (s *Slice[T]) ToReversed(less func(T, T) bool) *Slice[T] {
 // ITERATION
 
 /*
-The Every() method tests whether all elements in the slice pass the provided test function.
+The Every() method tests whether every element in the slice meets the condition. See also Some().
+
+The match function is called for each element.
+
+Example match function:
+
+	func(task Task) bool {
+		return task.EventType == 1
+	}
 */
 func (s Slice[T]) Every(match func(T) bool) bool {
 	for _, v := range s {
@@ -244,7 +253,17 @@ func (s Slice[T]) Every(match func(T) bool) bool {
 	return true
 }
 
-// filter
+/*
+The Filter() method tests whether an element in the slice meets the condition.
+
+The match function is called for each element. If it returns true, the element is added to the result slice.
+
+Example match function:
+
+	func(task Task) bool {
+		return task.EventType == 1
+	}
+*/
 func (s Slice[T]) Filter(match func(T) bool) Slice[T] {
 	var result Slice[T]
 	for _, v := range s {
@@ -257,6 +276,15 @@ func (s Slice[T]) Filter(match func(T) bool) Slice[T] {
 
 /*
 The Map() method iterates over each element and applies the provided change function to each element, returning a new slice containing the results.
+
+The change function takes an element and returns a modified element to put in the result slice.
+
+Example change function:
+
+	func(task Task) Task {
+		task.EventType = 5
+		return task
+	}
 */
 func (s Slice[T]) Map(change func(T) T) Slice[T] {
 	result := make(Slice[T], len(s))
@@ -264,6 +292,26 @@ func (s Slice[T]) Map(change func(T) T) Slice[T] {
 		result[i] = change(s[i])
 	}
 	return result
+}
+
+/*
+The Some() method tests whether some elements in the slice pass the provided test function. See also Every().
+
+The match function is called for each element. It should return true if the element passes the test.
+
+Example match function:
+
+	func(task Task) bool {
+		return task.EventType == 1
+	}
+*/
+func (s Slice[T]) Some(match func(T) bool) bool {
+	for _, v := range s {
+		if match(v) {
+			return true
+		}
+	}
+	return false
 }
 
 /*
@@ -277,21 +325,9 @@ func Reduce[T any, U any](s Slice[T], initial U, reducer func(U, T) U) U {
 	return accumulator
 }
 
-/*
-The Some() method tests whether some elements in the slice pass the provided test function.
-*/
-func (s Slice[T]) Some(match func(T) bool) bool {
-	for _, v := range s {
-		if match(v) {
-			return true
-		}
-	}
-	return false
-}
-
 // SEARCH
 /*
-The Find() method returns the first element and true if the slice satisfies the provided function, otherwise it returns the zero value and false.
+The Find() method returns the first element and true if the slice satisfies the provided function, otherwise it returns the zero value and false. See also FindLast().
 */
 func (s Slice[T]) Find(match func(T) bool) (T, bool) {
 	var result T
@@ -304,7 +340,7 @@ func (s Slice[T]) Find(match func(T) bool) (T, bool) {
 }
 
 /*
-The FindLast() method returns the last element and true if the slice satisfies the provided function, otherwise it returns the zero value and false.
+The FindLast() method returns the last element and true if the slice satisfies the provided function, otherwise it returns the zero value and false. See also Find().
 */
 func (s Slice[T]) FindLast(match func(T) bool) (T, bool) {
 	var result T
@@ -329,7 +365,7 @@ func (s Slice[T]) Includes(match func(T) bool) bool {
 }
 
 /*
-The IndexOf() method returns the index of the first element in the slice that satisfies the provided testing function.
+The IndexOf() method returns the index of the first element in the slice that satisfies the provided testing function. See also LastIndexOf().
 */
 func (s Slice[T]) IndexOf(match func(T) bool) int {
 	for i, element := range s {
@@ -341,7 +377,7 @@ func (s Slice[T]) IndexOf(match func(T) bool) int {
 }
 
 /*
-The LastIndexOf() method returns the index of the last element in the slice that satisfies the provided testing function.
+The LastIndexOf() method returns the index of the last element in the slice that satisfies the provided testing function. See also IndexOf().
 */
 func (s Slice[T]) LastIndexOf(match func(T) bool) int {
 	for i := len(s) - 1; i >= 0; i-- {
