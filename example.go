@@ -33,8 +33,13 @@ func main() {
 	// 	return task.EventType == 1
 	// })
 
-	Reduce(tasks, 0, func(result int, task Task) int {
-		return result + task.EventType
+	// Reduce(tasks, 0, func(result int, task Task) int {
+	// 	return result + task.EventType
+	// })
+
+	t, found := tasks.Find(func(task Task) bool {
+		return task.EventType == 1
 	})
 
+	fmt.Println(t.Name, found)
 }
