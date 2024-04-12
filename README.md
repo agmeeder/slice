@@ -1,7 +1,7 @@
 # slice
 A Go slice package with a generic Slice[T] type and Javascript like methods to manipulate the slice
 
-Add the package to you Go project
+Add the package to your Go project
 
 ````go
 go get github.com/agmeeder/slice
