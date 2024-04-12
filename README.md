@@ -10,6 +10,12 @@ go get github.com/agmeeder/slice
 Example code:
 
 ````go
+import {
+  "fmt"
+
+  "github.com/agmeeder/slice"
+}
+
 // Example struct
 type Task struct {
   EventType int
@@ -18,7 +24,7 @@ type Task struct {
 }
 
 // Define a slice 'tasks' of type 'Task'
-tasks := Slice[Task]{}
+tasks := slice.Slice[Task]{}
 
 // Create a new task
 task1 := Task{
