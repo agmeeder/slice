@@ -3,18 +3,18 @@ package slice
 import "fmt"
 
 type Task struct {
-	Name      string
-	Minutes   int
 	EventType int
+	Minutes   int
+	Name      string
 }
 
 func main() {
 	tasks := Slice[Task]{}
 
 	task1 := Task{
-		Name:      "Task 1",
-		Minutes:   30,
 		EventType: 1,
+		Minutes:   30,
+		Name:      "Task 1",
 	}
 
 	tasks.Push(task1).Push(Task{Name: "Task 2", EventType: 2})
